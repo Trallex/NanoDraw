@@ -32,13 +32,14 @@ import java.util.*
 class MainActivity : AppCompatActivity() {
 
     private lateinit var viewModel: CoreViewModel
-
+    var newColor : Int? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         viewModel = ViewModelProviders.of(this).get(CoreViewModel::class.java)
         bindUI()
     }
+
     private fun bindUI(){
         this.title = "NanoDraw"
         viewModel.drawning.observe(this, Observer {
@@ -82,11 +83,11 @@ class MainActivity : AppCompatActivity() {
                     override fun onStartTrackingTouch(seekBar: SeekBar?) {}
                     override fun onStopTrackingTouch(seekBar: SeekBar?) {}
                 })
-                button_color.setOnClickListener { color = openColorPicker(color) }
+                button_color.setOnClickListener { openColorPicker(color) }
                 button_cancel.setOnClickListener { builder.dismiss() }
                 button_confirm.setOnClickListener {
                     viewModel.brushSize.value = brushSize.toFloat()
-                    viewModel.color.value = color
+                    viewModel.color.value = newColor
                     builder.dismiss()
                 }
             }
@@ -97,8 +98,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun openColorPicker(oldColor: Int) :Int {
-        var newColor: Int = oldColor
+    private fun openColorPicker(oldColor: Int){
         var colorPicker = AmbilWarnaDialog(this, oldColor, object : AmbilWarnaDialog.OnAmbilWarnaListener{
             override fun onCancel(dialog: AmbilWarnaDialog?) {}
             override fun onOk(dialog: AmbilWarnaDialog?, color: Int) {
@@ -106,7 +106,6 @@ class MainActivity : AppCompatActivity() {
             }
         })
         colorPicker.show()
-        return newColor
     }
 
     override fun onPause() {

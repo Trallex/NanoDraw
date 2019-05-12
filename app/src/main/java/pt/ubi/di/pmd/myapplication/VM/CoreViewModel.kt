@@ -4,6 +4,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.divyanshu.draw.widget.MyPath
 import com.divyanshu.draw.widget.PaintOptions
+import pt.ubi.di.pmd.myapplication.DEFAULT_COLOR
 import pt.ubi.di.pmd.myapplication.DEFAULT_STROKE
 
 class CoreViewModel: ViewModel() {
@@ -11,7 +12,9 @@ class CoreViewModel: ViewModel() {
         drawning.value = paths
     }
     val drawning = MutableLiveData<LinkedHashMap<MyPath, PaintOptions>>()
-    val color = MutableLiveData<Int>()
+    val color = MutableLiveData<Int>().apply {
+        if(value == null) value = DEFAULT_COLOR
+    }
     val brushSize = MutableLiveData<Float>().apply {
         if(value == null) value = DEFAULT_STROKE
     }
