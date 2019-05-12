@@ -12,7 +12,7 @@ class CoreViewModel: ViewModel() {
     }
     val drawning = MutableLiveData<LinkedHashMap<MyPath, PaintOptions>>()
     val color = MutableLiveData<Int>()
-    val stroke = MutableLiveData<Float>().apply {
+    val brushSize = MutableLiveData<Float>().apply {
         if(value == null) value = DEFAULT_STROKE
     }
 

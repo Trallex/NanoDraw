@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Environment
 import android.view.WindowManager
+import android.widget.SeekBar
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.Observer
@@ -18,11 +19,12 @@ import com.karumi.dexter.listener.PermissionGrantedResponse
 import com.karumi.dexter.listener.PermissionRequest
 import com.karumi.dexter.listener.single.PermissionListener
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.menu.view.*
 import kotlinx.android.synthetic.main.save_file.view.*
 import pt.ubi.di.pmd.myapplication.VM.CoreViewModel
+import yuku.ambilwarna.AmbilWarnaDialog
 import java.io.File
 import java.io.FileOutputStream
-import java.security.Permission
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -42,14 +44,14 @@ class MainActivity : AppCompatActivity() {
         viewModel.drawning.observe(this, Observer {
             draw_view.mPaths = it
         })
-        viewModel.stroke.observe(this, Observer {
+        viewModel.brushSize.observe(this, Observer {
             draw_view.setStrokeWidth(it)
         })
         viewModel.color.observe(this, Observer {
             draw_view.setColor(it)
         })
         button_settings.setOnClickListener {
-            //TODO: settings ONCLICK iksde ddd
+            openSettingDialog()
         }
         button_undo.setOnClickListener{
             draw_view.undo()
@@ -60,6 +62,51 @@ class MainActivity : AppCompatActivity() {
         button_save.setOnClickListener {
             saveImage()
         }
+    }
+
+    private fun openSettingDialog() {
+        val builder = AlertDialog.Builder(this).create()
+        val view = layoutInflater.inflate(R.layout.menu, findViewById(android.R.id.content), false)
+            .apply {
+                var color = viewModel.color.value!!.toInt()
+                var brushSize = viewModel.brushSize.value?.toInt() ?: DEFAULT_STROKE.toInt()
+                seekBar_brush.max = 255
+                seekBar_brush.progress = brushSize
+                brush_selected_value.text = brushSize.toString()
+                seekBar_brush.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener{
+                    override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+                        brush_selected_value.text = seekBar?.progress.toString()
+                        brushSize = seekBar?.progress!!.toInt()
+                    }
+
+                    override fun onStartTrackingTouch(seekBar: SeekBar?) {}
+                    override fun onStopTrackingTouch(seekBar: SeekBar?) {}
+                })
+                button_color.setOnClickListener { color = openColorPicker(color) }
+                button_cancel.setOnClickListener { builder.dismiss() }
+                button_confirm.setOnClickListener {
+                    viewModel.brushSize.value = brushSize.toFloat()
+                    viewModel.color.value = color
+                    builder.dismiss()
+                }
+            }
+        builder.apply {
+            setTitle("Settings")
+            setView(view)
+            show()
+        }
+    }
+
+    private fun openColorPicker(oldColor: Int) :Int {
+        var newColor: Int = oldColor
+        var colorPicker = AmbilWarnaDialog(this, oldColor, object : AmbilWarnaDialog.OnAmbilWarnaListener{
+            override fun onCancel(dialog: AmbilWarnaDialog?) {}
+            override fun onOk(dialog: AmbilWarnaDialog?, color: Int) {
+                newColor = color
+            }
+        })
+        colorPicker.show()
+        return newColor
     }
 
     override fun onPause() {
