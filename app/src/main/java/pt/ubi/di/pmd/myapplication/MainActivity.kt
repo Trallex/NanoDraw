@@ -49,7 +49,7 @@ class MainActivity : AppCompatActivity() {
             draw_view.setColor(it)
         })
         button_settings.setOnClickListener {
-            //TODO: settings ONCLICK iksde
+            //TODO: settings ONCLICK iksde ddd
         }
         button_undo.setOnClickListener{
             draw_view.undo()
