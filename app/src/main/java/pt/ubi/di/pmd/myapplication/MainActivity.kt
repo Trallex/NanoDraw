@@ -1,7 +1,12 @@
 package pt.ubi.di.pmd.myapplication
 
 import android.Manifest
+import android.content.Context
 import android.graphics.Bitmap
+import android.hardware.Sensor
+import android.hardware.SensorEvent
+import android.hardware.SensorEventListener
+import android.hardware.SensorManager
 import android.media.MediaScannerConnection
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -10,6 +15,7 @@ import android.view.WindowManager
 import android.widget.SeekBar
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.karumi.dexter.Dexter
@@ -31,6 +37,10 @@ import java.util.*
 
 class MainActivity : AppCompatActivity() {
 
+    private lateinit var sensorManager : SensorManager
+    private var acelVal: Float = 0f
+    private var acelLast: Float = 0f
+    private var shake: Float = 0f
     private lateinit var viewModel: CoreViewModel
     var newColor : Int? = null
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -41,6 +51,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun bindUI(){
+
         this.title = "NanoDraw"
         viewModel.drawning.observe(this, Observer {
             draw_view.mPaths = it
@@ -63,6 +74,47 @@ class MainActivity : AppCompatActivity() {
         button_save.setOnClickListener {
             saveImage()
         }
+        acelVal = SensorManager.GRAVITY_EARTH;
+        acelLast = SensorManager.GRAVITY_EARTH
+
+        sensorManager =  getSystemService(Context.SENSOR_SERVICE) as SensorManager
+        sensorManager.registerListener(
+            object : SensorEventListener {
+                override fun onSensorChanged(event: SensorEvent?) {
+                    val x:Double = event!!.values[0].toDouble()
+                    val y:Double = event!!.values[1].toDouble()
+                    val z:Double = event!!.values[2].toDouble()
+
+                    acelLast = acelVal
+                    acelVal = Math.sqrt(x*x + y*y + z*z).toFloat()
+                    val delta : Float = acelVal - acelLast
+                    shake = shake * .9f + delta
+                     if(shake > 12)
+                     {
+                         openEraseDialog()
+                     }
+                }
+                override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {
+
+                }
+            },
+            sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),
+            SensorManager.SENSOR_DELAY_NORMAL
+        )
+
+
+
+    }
+    private fun openEraseDialog(){
+        val builder = AlertDialog.Builder(this).create()
+        val view = layoutInflater.inflate(R.layout.erase_dialog, findViewById(android.R.id.content), false)
+            .apply {
+                button_cancel.setOnClickListener { builder.dismiss() }
+                button_confirm.setOnClickListener {
+                    draw_view.clearCanvas()
+                    builder.dismiss()
+                }
+            }
     }
 
     private fun openSettingDialog() {

@@ -41,7 +41,7 @@
             android:layout_marginBottom="8dp" app:layout_constraintBottom_toBottomOf="parent"
             android:layout_marginEnd="8dp" app:layout_constraintEnd_toStartOf="@id/button_undo"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
+
     />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -54,7 +54,7 @@
             android:layout_marginBottom="8dp" app:layout_constraintBottom_toBottomOf="parent"
             android:layout_marginEnd="8dp" app:layout_constraintEnd_toStartOf="@id/button_redo"
             app:layout_constraintStart_toEndOf="@id/button_settings"
-            app:layout_constraintHorizontal_bias="0.5"
+
     />
 
 
@@ -68,7 +68,7 @@
             android:layout_marginBottom="8dp" app:layout_constraintBottom_toBottomOf="parent"
             android:layout_marginEnd="8dp" app:layout_constraintEnd_toStartOf="@id/button_save"
             app:layout_constraintStart_toEndOf="@id/button_undo"
-            app:layout_constraintHorizontal_bias="0.5"
+
     />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -81,5 +81,5 @@
             android:layout_marginBottom="8dp" app:layout_constraintBottom_toBottomOf="parent"
             android:layout_marginEnd="8dp" app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/button_redo"
-            app:layout_constraintHorizontal_bias="0.5"/>
+    />
 </androidx.constraintlayout.widget.ConstraintLayout>
